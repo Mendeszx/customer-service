@@ -1,0 +1,170 @@
+openapi: 3.0.3
+info:
+  title: Customer Service API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+    description: Servidor local de desenvolvimento
+
+paths:
+  /clientes:
+    post:
+      summary: Cadastrar novo cliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClienteRequest'
+      responses:
+        '201':
+          description: Cliente criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClienteResponse'
+        '400':
+          description: Dados inválidos
+
+  /login:
+    post:
+      summary: Autenticar cliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Autenticação bem-sucedida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciais inválidas
+
+  /clientes/{clienteId}:
+    put:
+      summary: Atualizar cadastro de cliente
+      parameters:
+        - name: clienteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClienteUpdateRequest'
+      responses:
+        '200':
+          description: Cliente atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClienteResponse'
+        '404':
+          description: Cliente não encontrado
+
+components:
+  schemas:
+    ClienteRequest:
+      type: object
+      required:
+        - nome
+        - email
+        - cpf
+        - senha
+      properties:
+        nome:
+          type: string
+          example: João da Silva
+        email:
+          type: string
+          format: email
+          example: joao@example.com
+        cpf:
+          type: string
+          example: "12345678901"
+        telefone:
+          type: string
+          example: "11999998888"
+        dataNascimento:
+          type: string
+          format: date
+          example: "1990-01-01"
+        genero:
+          type: string
+          enum: [MASCULINO, FEMININO, OUTROS, NAO_INFORMAR]
+        senha:
+          type: string
+          format: password
+
+    ClienteUpdateRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+        email:
+          type: string
+          format: email
+        telefone:
+          type: string
+        genero:
+          type: string
+          enum: [MASCULINO, FEMININO, OUTROS, NAO_INFORMAR]
+
+    ClienteResponse:
+      type: object
+      properties:
+        clienteId:
+          type: string
+          format: uuid
+        nome:
+          type: string
+        email:
+          type: string
+          format: email
+        cpf:
+          type: string
+        telefone:
+          type: string
+        dataNascimento:
+          type: string
+          format: date
+        genero:
+          type: string
+        dataCriacao:
+          type: string
+          format: date-time
+        dataAlteracao:
+          type: string
+          format: date-time
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - senha
+      properties:
+        email:
+          type: string
+          format: email
+        senha:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT de autenticação
+        expiresIn:
+          type: integer
+          example: 3600

@@ -1,21 +1,14 @@
 spring:
-  application:
-    name: customer-service
   datasource:
     url: jdbc:postgresql://localhost:5432/cliente
     username: postgres
-    password: sua_senha_aqui
+    password: admin
     driver-class-name: org.postgresql.Driver
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
       hibernate:
-        ddl-auto: update # pode ser: none, validate, update, create, create-drop
-      show-sql: true
-      properties:
-        hibernate:
-          format_sql: true
-          dialect: org.hibernate.dialect.PostgreSQLDialect
-
-server:
-  port: 8080
-  servlet:
-    context-path: /customer-service
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
