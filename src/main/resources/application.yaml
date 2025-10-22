@@ -7,8 +7,6 @@ server:
   servlet:
     context-path: /customer-service
 
-logging:
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} | %-5level | %logger{36} | X-Request-Id [%X{requestId}] | X-Client-Id [%X{clientId}] | %msg%n"
-  level:
-    root: INFO
+request:
+  requestId: X-Request-Id
+  clientId: X-Client-Id

@@ -7,6 +7,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -14,8 +15,11 @@ import java.io.IOException;
 @Component
 public class LoggingContextFilter implements Filter {
 
-    private static final String REQUEST_ID_HEADER = "X-Request-Id";
-    private static final String CLIENT_ID_HEADER = "X-Client-Id";
+    @Value("${request.requestId}")
+    private String requestIdHeader;
+
+    @Value("${request.clientId}")
+    private String clientIdHeader;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -23,9 +27,9 @@ public class LoggingContextFilter implements Filter {
 
         try {
 
-            String requestId = request.getHeader(REQUEST_ID_HEADER);
+            String requestId = request.getHeader(requestIdHeader);
 
-            String clientId = request.getHeader(CLIENT_ID_HEADER);
+            String clientId = request.getHeader(clientIdHeader);
             if (clientId == null) {
                 clientId = "UNKNOWN";
             }
