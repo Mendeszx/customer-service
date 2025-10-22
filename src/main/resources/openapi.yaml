@@ -19,6 +19,18 @@ paths:
         - Customers
       summary: Register a new customer
       operationId: createCustomer
+      parameters:
+        - name: X-Client-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: X-Request-Id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -247,7 +259,7 @@ components:
           format: password
           minLength: 8
           maxLength: 20
-          pattern: '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+]).{8,}$'
+          pattern: '^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+]).{8,}$'
           example: "R8m!tQ2_pL9"
           description: Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character from !@#$%^&*()_+.
 

@@ -4,5 +4,6 @@ import com.api.customer_service.api.CustomersApi;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ClienteController implements CustomersApi {
+public class CustomerController implements CustomersApi {
+
 }
