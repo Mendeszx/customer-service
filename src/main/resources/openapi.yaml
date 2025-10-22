@@ -3,22 +3,22 @@ info:
   title: Customer Service API
   version: 0.0.1
   contact:
-    name: Suporte a API
+    name: API Support
     email: guilherme_gmc@outlook.com
-    
+
 servers:
   - url: http://localhost:8080/customer-service
-    description: Servidor local de desenvolvimento
+    description: Local development server
   - url: http://localhost:8080/customer-service
-    description: Servidor cloud para testes
+    description: Cloud test server
 
 paths:
-  /clientes:
+  /customers:
     post:
       tags:
-        - Clientes
-      summary: Cadastrar um novo cliente
-      operationId: criarCliente
+        - Customers
+      summary: Register a new customer
+      operationId: createCustomer
       requestBody:
         required: true
         content:
@@ -27,49 +27,125 @@ paths:
               $ref: '#/components/schemas/CustomerRegisterRequest'
       responses:
         '201':
-          description: Cliente criado com sucesso
+          description: Customer successfully created
           headers:
             Location:
-              description: URL do novo recurso
+              description: URL of the newly created resource
               schema:
                 type: string
-                example: /usuarios/550e8400-e29b-41d4-a716-446655440000
+                example: /customers/550e8400-e29b-41d4-a716-446655440000
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerRegisterResponse'
         '400':
-          description: Dados inválidos
+          description: Invalid input data
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerRegisterErrorResponse'
         '409':
-          description: CPF ou e-mail já cadastrado
+          description: CPF or email already registered
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerRegisterErrorResponse'
               example:
-                detalhes:
-                  - campo: "cpf"
-                    situacao: "CPF já cadastrado."
-                  - campo: "email"
-                    situacao: "E-mail já cadastrado."
-                mensagem: "DADOS_INVALIDOS"
+                details:
+                  - field: "cpf"
+                    status: "CPF already registered."
+                  - field: "email"
+                    status: "Email already registered."
+                message: "INVALID_DATA"
         '500':
-          description: Erro interno no servidor
+          description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+#    get:
+#      tags:
+#        - Customers
+#      summary: Retrieve a customer by ID
+#      operationId: getCustomerById
+#      parameters:
+#        - name: customerId
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#            format: uuid
+#          description: Unique identifier of the customer
+#      responses:
+#        '200':
+#          description: Customer retrieved successfully
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/CustomerResponse'
+#        '404':
+#          description: Customer not found
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/ErrorResponse'
+#        '500':
+#          description: Internal server error
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/ErrorResponse'
+#    put:
+#      tags:
+#        - Customers
+#      summary: Update an existing customer
+#      operationId: updateCustomer
+#      parameters:
+#        - name: customerId
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#            format: uuid
+#          description: Unique identifier of the customer
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/CustomerRegisterRequest'
+#      responses:
+#        '200':
+#          description: Customer updated successfully
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/CustomerResponse'
+#        '400':
+#          description: Invalid data in request body
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/CustomerRegisterErrorResponse'
+#        '404':
+#          description: Customer not found
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/ErrorResponse'
+#        '500':
+#          description: Internal server error
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/ErrorResponse'
 
   /login:
     post:
       tags:
-        - Autenticação
-      summary: Realizar login do cliente
-      operationId: autenticarCliente
+        - Authentication
+      summary: Authenticate a customer
+      operationId: authenticateCustomer
       requestBody:
         required: true
         content:
@@ -77,41 +153,42 @@ paths:
             schema:
               $ref: '#/components/schemas/CustomerLoginRequest'
             examples:
-              exemploLoginCpf:
-                summary: Login com CPF
+              loginWithCpf:
+                summary: Login using CPF
                 value:
-                  identificador: "12345678901"
-                  senha: "Senha123@"
-              exemploLoginEmail:
-                summary: Login com e-mail
+                  identifier: "12345678901"
+                  password: "Password123@"
+              loginWithEmail:
+                summary: Login using email
                 value:
-                  identificador: "joao@example.com"
-                  senha: "Senha123@"
+                  identifier: "john@example.com"
+                  password: "Password123@"
       responses:
         '200':
-          description: Autenticação realizada com sucesso
+          description: Authentication successful
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerLoginResponse'
         '400':
-          description: Requisição inválida (dados malformados)
+          description: Bad request (malformed data)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerLoginErrorResponse'
         '401':
-          description: Credenciais inválidas
+          description: Invalid credentials
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerLoginErrorResponse'
         '500':
-          description: Erro interno no servidor
+          description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     CustomerRegisterRequest:
@@ -119,11 +196,11 @@ components:
       required:
         - cpf
         - email
-        - nome
-        - telefone
-        - dataNascimento
-        - genero
-        - senha
+        - name
+        - phone
+        - birthDate
+        - gender
+        - password
       properties:
         cpf:
           type: string
@@ -131,102 +208,151 @@ components:
           minLength: 11
           maxLength: 11
           pattern: '^[0-9]{11}$'
-          description: CPF do cliente.
+          description: Customer's CPF (Brazilian tax ID).
         email:
           type: string
           format: email
-          example: "joao@example.com"
+          example: "john@example.com"
           minLength: 5
           maxLength: 200
-          description: Email do cliente.
-        nome:
+          description: Customer's email.
+        name:
           type: string
           example: "Guilherme Mendes"
           minLength: 5
           maxLength: 80
-          description: Nome completo do cliente.
-        telefone:
+          description: Full name of the customer.
+        phone:
           type: string
           example: "11999998888"
           minLength: 11
           maxLength: 11
           pattern: '^[0-9]{10,11}$'
-          description: Telefone celular com DDD do cliente.
-        dataNascimento:
+          description: Customer's mobile phone number including area code (DDD).
+        birthDate:
           type: string
           format: date
           example: "1990-01-01"
-          description: Data de nascimento do cliente.
-        genero:
+          description: Customer's date of birth.
+        gender:
           type: string
-          enum: 
-            - MASCULINO
-            - FEMININO
-            - OUTROS
-            - NAO_INFORMAR
-          description: Gênero do cliente.
-        senha:
+          enum:
+            - MALE
+            - FEMALE
+            - OTHER
+            - PREFER_NOT_TO_SAY
+          description: Customer's gender.
+        password:
           type: string
           format: password
           minLength: 8
           maxLength: 20
           pattern: '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+]).{8,}$'
           example: "R8m!tQ2_pL9"
-          description: Senha do cliente com obrigatóriedade de ter pelo menos 1 letra maiúscula, 1 minúscula, 1 dígito e 1 caractere especial do conjunto !@#$%^&*()_+ e restringe os caracteres aos permitidos (letras, dígitos e os especiais listados).
-    
+          description: Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character from !@#$%^&*()_+.
+
     CustomerRegisterResponse:
       type: object
       properties:
-        detalhes:
+        details:
           type: object
           properties:
-            clienteId:
+            customerId:
               type: string
               format: uuid
               example: "b19c1d76-02cc-4f7f-8233-928f2a3a55ff"
-            dataCriacao:
+            createdAt:
               type: string
               format: date
-        mensagem:
+        message:
           type: string
-          enum: 
-            - CLIENTE_CADASTRADO_COM_SUCESSO
-          
+          enum:
+            - CUSTOMER_CREATED_SUCCESSFULLY
+
     CustomerRegisterErrorResponse:
       type: object
       properties:
-        detalhes:
+        details:
           type: array
           items:
             type: object
             properties:
-              campo:
+              field:
                 type: string
                 example: "cpf"
-              situacao:
+              status:
                 type: string
-                example: "CPF Invalido."
-        mensagem:
+                example: "Invalid CPF."
+        message:
           type: string
-          enum: 
-            - DADOS_INVALIDOS
+          enum:
+            - INVALID_DATA
+
+    CustomerResponse:
+      type: object
+      required:
+        - customerId
+        - cpf
+        - email
+        - name
+        - phone
+        - birthDate
+        - gender
+        - createdAt
+        - updatedAt
+      properties:
+        customerId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        cpf:
+          type: string
+          example: "12345678901"
+        email:
+          type: string
+          example: "john@example.com"
+        name:
+          type: string
+          example: "John Doe"
+        phone:
+          type: string
+          example: "11999998888"
+        birthDate:
+          type: string
+          format: date
+          example: "1990-01-01"
+        gender:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+            - OTHER
+            - PREFER_NOT_TO_SAY
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-15T19:35:42Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-10-21T18:45:12Z"
 
     CustomerLoginRequest:
       type: object
       required:
-        - identificador
-        - senha
+        - identifier
+        - password
       properties:
-        identificador:
+        identifier:
           type: string
-          example: "joao@example.com"
-          description: "Pode ser o e-mail ou o CPF do usuário"
+          example: "john@example.com"
+          description: "May be either the user's email or CPF."
           minLength: 5
           maxLength: 200
-        senha:
+        password:
           type: string
           format: password
-          example: "Senha123@"
+          example: "Password123@"
           pattern: '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+]).{8,}$'
           minLength: 8
           maxLength: 20
@@ -235,18 +361,18 @@ components:
       type: object
       required:
         - token
-        - tipoToken
-        - expiracao
+        - tokenType
+        - expiration
         - clientId
       properties:
         token:
           type: string
-          description: Token JWT de autenticação
+          description: JWT authentication token
           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        tipoToken:
+        tokenType:
           type: string
           example: "Bearer"
-        expiracao:
+        expiration:
           type: string
           format: date-time
           example: "2025-10-15T20:00:00Z"
@@ -258,24 +384,24 @@ components:
     CustomerLoginErrorResponse:
       type: object
       properties:
-        mensagem:
+        message:
           type: string
           enum:
-            - CREDENCIAIS_INVALIDAS
-            - DADOS_INVALIDOS
-          example: "CREDENCIAIS_INVALIDAS"
-        detalhes:
+            - INVALID_CREDENTIALS
+            - INVALID_DATA
+          example: "INVALID_CREDENTIALS"
+        details:
           type: array
           items:
             type: object
             properties:
-              campo:
+              field:
                 type: string
-                example: "identificador"
-              situacao:
+                example: "identifier"
+              status:
                 type: string
-                example: "CPF Inválido."
-        
+                example: "Invalid CPF."
+
     ErrorResponse:
       type: object
       required:
@@ -291,24 +417,17 @@ components:
         error:
           type: string
           example: "Internal Server Error"
-          description: Descrição resumida do erro
+          description: Short error description.
         message:
           type: string
-          example: "Erro inesperado ao processar a solicitação."
-          description: Mensagem de erro mais detalhada
+          example: "Unexpected error while processing the request."
+          description: More detailed error message.
         path:
           type: string
-          example: "/usuarios"
-          description: Caminho do endpoint em que ocorreu o erro
+          example: "/users"
+          description: Endpoint path where the error occurred.
         traceId:
           type: string
           format: uuid
           example: "b5a8e2c8-3e54-4f73-a2b0-f9b1dbfa34cc"
-          description: ID da requisição para rastreamento em logs e sistemas de monitoramento
-
-
-
-
-
-
-
+          description: Request ID for log and monitoring tracking.
