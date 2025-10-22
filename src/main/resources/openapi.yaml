@@ -7,9 +7,9 @@ info:
     email: guilherme_gmc@outlook.com
 
 servers:
-  - url: http://localhost:8080/customer-service
+  - url: http://localhost:8080/v1/customer-service
     description: Local development server
-  - url: http://localhost:8080/customer-service
+  - url: http://localhost:8080/v1/customer-service
     description: Cloud test server
 
 paths:
@@ -152,54 +152,54 @@ paths:
 #              schema:
 #                $ref: '#/components/schemas/ErrorResponse'
 
-  /login:
-    post:
-      tags:
-        - Authentication
-      summary: Authenticate a customer
-      operationId: authenticateCustomer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CustomerLoginRequest'
-            examples:
-              loginWithCpf:
-                summary: Login using CPF
-                value:
-                  identifier: "12345678901"
-                  password: "Password123@"
-              loginWithEmail:
-                summary: Login using email
-                value:
-                  identifier: "john@example.com"
-                  password: "Password123@"
-      responses:
-        '200':
-          description: Authentication successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomerLoginResponse'
-        '400':
-          description: Bad request (malformed data)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomerLoginErrorResponse'
-        '401':
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomerLoginErrorResponse'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+#  /login:
+#    post:
+#      tags:
+#        - Authentication
+#      summary: Authenticate a customer
+#      operationId: authenticateCustomer
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/CustomerLoginRequest'
+#            examples:
+#              loginWithCpf:
+#                summary: Login using CPF
+#                value:
+#                  identifier: "12345678901"
+#                  password: "Password123@"
+#              loginWithEmail:
+#                summary: Login using email
+#                value:
+#                  identifier: "john@example.com"
+#                  password: "Password123@"
+#      responses:
+#        '200':
+#          description: Authentication successful
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/CustomerLoginResponse'
+#        '400':
+#          description: Bad request (malformed data)
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/CustomerLoginErrorResponse'
+#        '401':
+#          description: Invalid credentials
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/CustomerLoginErrorResponse'
+#        '500':
+#          description: Internal server error
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -349,70 +349,70 @@ components:
           format: date-time
           example: "2025-10-21T18:45:12Z"
 
-    CustomerLoginRequest:
-      type: object
-      required:
-        - identifier
-        - password
-      properties:
-        identifier:
-          type: string
-          example: "john@example.com"
-          description: "May be either the user's email or CPF."
-          minLength: 5
-          maxLength: 200
-        password:
-          type: string
-          format: password
-          example: "Password123@"
-          pattern: '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+]).{8,}$'
-          minLength: 8
-          maxLength: 20
-
-    CustomerLoginResponse:
-      type: object
-      required:
-        - token
-        - tokenType
-        - expiration
-        - clientId
-      properties:
-        token:
-          type: string
-          description: JWT authentication token
-          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        tokenType:
-          type: string
-          example: "Bearer"
-        expiration:
-          type: string
-          format: date-time
-          example: "2025-10-15T20:00:00Z"
-        clientId:
-          type: string
-          format: uuid
-          example: "550e8400-e29b-41d4-a716-446655440000"
-
-    CustomerLoginErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          enum:
-            - INVALID_CREDENTIALS
-            - INVALID_DATA
-          example: "INVALID_CREDENTIALS"
-        details:
-          type: array
-          items:
-            type: object
-            properties:
-              field:
-                type: string
-                example: "identifier"
-              status:
-                type: string
-                example: "Invalid CPF."
+#    CustomerLoginRequest:
+#      type: object
+#      required:
+#        - identifier
+#        - password
+#      properties:
+#        identifier:
+#          type: string
+#          example: "john@example.com"
+#          description: "May be either the user's email or CPF."
+#          minLength: 5
+#          maxLength: 200
+#        password:
+#          type: string
+#          format: password
+#          example: "Password123@"
+#          pattern: '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+]).{8,}$'
+#          minLength: 8
+#          maxLength: 20
+#
+#    CustomerLoginResponse:
+#      type: object
+#      required:
+#        - token
+#        - tokenType
+#        - expiration
+#        - clientId
+#      properties:
+#        token:
+#          type: string
+#          description: JWT authentication token
+#          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+#        tokenType:
+#          type: string
+#          example: "Bearer"
+#        expiration:
+#          type: string
+#          format: date-time
+#          example: "2025-10-15T20:00:00Z"
+#        clientId:
+#          type: string
+#          format: uuid
+#          example: "550e8400-e29b-41d4-a716-446655440000"
+#
+#    CustomerLoginErrorResponse:
+#      type: object
+#      properties:
+#        message:
+#          type: string
+#          enum:
+#            - INVALID_CREDENTIALS
+#            - INVALID_DATA
+#          example: "INVALID_CREDENTIALS"
+#        details:
+#          type: array
+#          items:
+#            type: object
+#            properties:
+#              field:
+#                type: string
+#                example: "identifier"
+#              status:
+#                type: string
+#                example: "Invalid CPF."
 
     ErrorResponse:
       type: object
