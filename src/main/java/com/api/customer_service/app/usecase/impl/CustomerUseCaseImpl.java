@@ -1,29 +1,28 @@
 package com.api.customer_service.app.usecase.impl;
 
 import com.api.customer_service.app.usecase.CustomerUseCase;
-import com.api.customer_service.model.CustomerRegisterRequest;
+import com.api.customer_service.domain.input.CustomerRegisterInput;
+import com.api.customer_service.domain.output.CustomerRegisterOutput;
 import com.api.customer_service.model.CustomerRegisterResponse;
-import com.api.customer_service.model.CustomerRegisterResponseDetails;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class CustomerUseCaseImpl implements CustomerUseCase {
 
     @Override
-    public CustomerRegisterResponse createCustomer(CustomerRegisterRequest customerRegisterRequest) {
+    public CustomerRegisterOutput createCustomer(CustomerRegisterInput customerRegisterInput) {
 
-        CustomerRegisterResponse customerRegisterResponse = new CustomerRegisterResponse();
+        log.info("CustomerRegisterRequest: {}", customerRegisterInput);
 
-        CustomerRegisterResponseDetails customerRegisterResponseDetails = new CustomerRegisterResponseDetails();
-        customerRegisterResponseDetails.setCustomerId(UUID.randomUUID());
-        customerRegisterResponseDetails.setCreatedAt(LocalDate.now());
-
-        customerRegisterResponse.setDetails(customerRegisterResponseDetails);
-        customerRegisterResponse.setMessage(CustomerRegisterResponse.MessageEnum.CUSTOMER_CREATED_SUCCESSFULLY);
-
-        return customerRegisterResponse;
+        return CustomerRegisterOutput.builder()
+                .customerId(UUID.randomUUID())
+                .createdAt(LocalDate.now())
+                .message(CustomerRegisterResponse.MessageEnum.CUSTOMER_CREATED_SUCCESSFULLY)
+                .build();
     }
 }

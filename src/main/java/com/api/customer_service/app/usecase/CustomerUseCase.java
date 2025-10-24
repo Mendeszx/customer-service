@@ -1,10 +1,10 @@
 package com.api.customer_service.app.usecase;
 
 
-import com.api.customer_service.model.CustomerRegisterRequest;
-import com.api.customer_service.model.CustomerRegisterResponse;
+import com.api.customer_service.domain.input.CustomerRegisterInput;
+import com.api.customer_service.domain.output.CustomerRegisterOutput;
 
 public interface CustomerUseCase {
 
-    CustomerRegisterResponse createCustomer(CustomerRegisterRequest customerRegisterRequest);
+    CustomerRegisterOutput createCustomer(CustomerRegisterInput customerRegisterInput);
 }
