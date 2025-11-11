@@ -152,81 +152,23 @@ paths:
 #              schema:
 #                $ref: '#/components/schemas/ErrorResponse'
 
-#  /login:
-#    post:
-#      tags:
-#        - Authentication
-#      summary: Authenticate a customer
-#      operationId: authenticateCustomer
-#      requestBody:
-#        required: true
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/CustomerLoginRequest'
-#            examples:
-#              loginWithCpf:
-#                summary: Login using CPF
-#                value:
-#                  identifier: "12345678901"
-#                  password: "Password123@"
-#              loginWithEmail:
-#                summary: Login using email
-#                value:
-#                  identifier: "john@example.com"
-#                  password: "Password123@"
-#      responses:
-#        '200':
-#          description: Authentication successful
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/CustomerLoginResponse'
-#        '400':
-#          description: Bad request (malformed data)
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/CustomerLoginErrorResponse'
-#        '401':
-#          description: Invalid credentials
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/CustomerLoginErrorResponse'
-#        '500':
-#          description: Internal server error
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/ErrorResponse'
-
 components:
   schemas:
     CustomerRegisterRequest:
       type: object
       required:
-        - cpf
         - email
         - name
         - phone
         - birthDate
         - gender
-        - password
       properties:
-        cpf:
-          type: string
-          example: "12345678901"
-          minLength: 11
-          maxLength: 11
-          pattern: '^[0-9]{11}$'
-          description: Customer's CPF (Brazilian tax ID).
         email:
           type: string
           format: email
           example: "john@example.com"
           minLength: 5
-          maxLength: 200
+          maxLength: 250
           description: Customer's email.
         name:
           type: string
@@ -265,74 +207,92 @@ components:
 
     CustomerRegisterResponse:
       type: object
+      description: Successful response returned after a new customer is registered.
       properties:
         details:
           type: object
+          description: Contains information about the created customer.
           properties:
             customerId:
               type: string
               format: uuid
               example: "b19c1d76-02cc-4f7f-8233-928f2a3a55ff"
+              description: Unique identifier assigned to the customer in the internal system.
             createdAt:
               type: string
-              format: date
+              format: datetime
+              example: "2025-10-15T19:35:42Z"
+              description: Timestamp (UTC) indicating when the customer record was created.
         message:
           type: string
           enum:
             - CUSTOMER_CREATED_SUCCESSFULLY
+          example: "CUSTOMER_CREATED_SUCCESSFULLY"
+          description: Message code indicating the successful creation of a new customer.
 
     CustomerRegisterErrorResponse:
       type: object
+      description: Standard error response for validation or data integrity issues during customer registration.
       properties:
         details:
           type: array
+          description: List of specific validation errors found in the request payload.
           items:
             type: object
             properties:
               field:
                 type: string
-                example: "cpf"
+                example: "birthDate"
+                description: Name of the field in the request body that caused the validation error.
               status:
                 type: string
-                example: "Invalid CPF."
+                example: "Invalid birthDate."
+                description: Human-readable description of the validation issue associated with the field.
         message:
           type: string
           enum:
             - INVALID_DATA
+          description: General error code indicating that the request contains invalid or inconsistent data.
 
-    CustomerResponse:
+    InformationResponse:
       type: object
       required:
         - customerId
-        - cpf
         - email
         - name
         - phone
         - birthDate
         - gender
         - createdAt
-        - updatedAt
       properties:
         customerId:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
-        cpf:
+          description: Unique identifier of the customer in the internal system.
+        keycloakId:
           type: string
-          example: "12345678901"
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+          nullable: true
+          description: Identifier of the customer within the Keycloak authentication system. May be null if the user has not completed authentication setup.
         email:
           type: string
           example: "john@example.com"
+          description: Customer’s registered email address.
         name:
           type: string
           example: "John Doe"
+          description: Full name of the customer.
         phone:
           type: string
           example: "11999998888"
+          description: Customer’s mobile phone number including area code (DDD). Only digits, no spaces or symbols.
         birthDate:
           type: string
           format: date
           example: "1990-01-01"
+          description: Customer’s date of birth in ISO 8601 format (YYYY-MM-DD).
         gender:
           type: string
           enum:
@@ -340,82 +300,43 @@ components:
             - FEMALE
             - OTHER
             - PREFER_NOT_TO_SAY
+          description: Gender identity selected by the customer.
+        heard_about:
+          type: string
+          enum:
+            - RECOMMENDATION
+            - SOCIAL_MEDIA
+            - APP_STORE
+            - INFLUENCER
+            - OTHER
+          example: "SOCIAL_MEDIA"
+          nullable: true
+          description: Source from which the customer first heard about the application (e.g., social media, recommendation, influencer). Optional field.
+        country:
+          type: string
+          example: "BR"
+          nullable: true
+          description: ISO 3166-1 alpha-2 country code representing the customer’s country (e.g., BR, US, GB). Optional field.
+        timezone:
+          type: string
+          example: "America/Sao_Paulo"
+          nullable: true
+          description: IANA time zone identifier (e.g., America/Sao_Paulo, Europe/London, Asia/Tokyo). Optional field.
         createdAt:
           type: string
-          format: date-time
+          format: datetime
           example: "2025-10-15T19:35:42Z"
+          description: Timestamp when the customer record was created (ISO 8601 format, UTC).
         updatedAt:
           type: string
-          format: date-time
+          format: datetime
           example: "2025-10-21T18:45:12Z"
-
-#    CustomerLoginRequest:
-#      type: object
-#      required:
-#        - identifier
-#        - password
-#      properties:
-#        identifier:
-#          type: string
-#          example: "john@example.com"
-#          description: "May be either the user's email or CPF."
-#          minLength: 5
-#          maxLength: 200
-#        password:
-#          type: string
-#          format: password
-#          example: "Password123@"
-#          pattern: '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+]).{8,}$'
-#          minLength: 8
-#          maxLength: 20
-#
-#    CustomerLoginResponse:
-#      type: object
-#      required:
-#        - token
-#        - tokenType
-#        - expiration
-#        - clientId
-#      properties:
-#        token:
-#          type: string
-#          description: JWT authentication token
-#          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-#        tokenType:
-#          type: string
-#          example: "Bearer"
-#        expiration:
-#          type: string
-#          format: date-time
-#          example: "2025-10-15T20:00:00Z"
-#        clientId:
-#          type: string
-#          format: uuid
-#          example: "550e8400-e29b-41d4-a716-446655440000"
-#
-#    CustomerLoginErrorResponse:
-#      type: object
-#      properties:
-#        message:
-#          type: string
-#          enum:
-#            - INVALID_CREDENTIALS
-#            - INVALID_DATA
-#          example: "INVALID_CREDENTIALS"
-#        details:
-#          type: array
-#          items:
-#            type: object
-#            properties:
-#              field:
-#                type: string
-#                example: "identifier"
-#              status:
-#                type: string
-#                example: "Invalid CPF."
+          nullable: true
+          description: Timestamp of the last update to the customer record (ISO 8601 format, UTC). May be null if never updated.
 
     ErrorResponse:
       type: object
+      description: Standard error response for unexpected or internal server errors.
       required:
         - timestamp
         - path
@@ -424,22 +345,23 @@ components:
       properties:
         timestamp:
           type: string
-          format: date-time
+          format: datetime
           example: "2025-10-15T19:35:42Z"
+          description: Timestamp indicating when the error occurred (ISO 8601 format, UTC).
         error:
           type: string
           example: "Internal Server Error"
-          description: Short error description.
+          description: Short error classification, typically matching the HTTP status reason phrase.
         message:
           type: string
           example: "Unexpected error while processing the request."
-          description: More detailed error message.
+          description: Detailed description of the error. Intended for logging and debugging purposes.
         path:
           type: string
-          example: "/users"
-          description: Endpoint path where the error occurred.
+          example: "/customers"
+          description: API endpoint path where the error occurred.
         traceId:
           type: string
           format: uuid
           example: "b5a8e2c8-3e54-4f73-a2b0-f9b1dbfa34cc"
-          description: Request ID for log and monitoring tracking.
+          description: Unique identifier of the request, used for tracking and correlation in logs or monitoring systems.

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class CustomerRegisterOutput {
 
     private UUID customerId;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
     private CustomerRegisterResponse.MessageEnum message;
 
     public UUID getCustomerId() {
@@ -25,11 +26,11 @@ public class CustomerRegisterOutput {
         this.customerId = customerId;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

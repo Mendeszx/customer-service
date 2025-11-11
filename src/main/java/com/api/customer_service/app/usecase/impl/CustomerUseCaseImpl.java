@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 @Slf4j
@@ -21,7 +23,7 @@ public class CustomerUseCaseImpl implements CustomerUseCase {
 
         return CustomerRegisterOutput.builder()
                 .customerId(UUID.randomUUID())
-                .createdAt(LocalDate.now())
+                .createdAt(LocalDate.now().atTime(LocalTime.now(ZoneId.systemDefault())))
                 .message(CustomerRegisterResponse.MessageEnum.CUSTOMER_CREATED_SUCCESSFULLY)
                 .build();
     }

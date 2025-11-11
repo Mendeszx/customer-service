@@ -11,5 +11,5 @@ public interface CustomerRegisterMapper {
     @Mapping(target = "details.customerId", source = "customerId")
     @Mapping(target = "details.createdAt", source = "createdAt")
     @Mapping(target = "message", source = "message")
-    CustomerRegisterResponse toResponse(CustomerRegisterOutput output);
+    CustomerRegisterResponse toResponse(CustomerRegisterOutput customerRegisterOutput);
 }

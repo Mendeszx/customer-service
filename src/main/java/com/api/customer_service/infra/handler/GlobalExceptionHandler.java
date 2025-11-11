@@ -14,6 +14,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -70,7 +73,7 @@ public class GlobalExceptionHandler {
     private ErrorResponse createErrorResponse(Exception exception, HttpServletRequest request) {
         ErrorResponse response = new ErrorResponse();
 
-        response.setTimestamp(ZonedDateTime.now().toOffsetDateTime());
+        response.setTimestamp(LocalDate.now().atTime(LocalTime.now(ZoneId.systemDefault())).toString());
         response.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
         response.setMessage(exception.getMessage());
         response.setPath(request.getRequestURI());

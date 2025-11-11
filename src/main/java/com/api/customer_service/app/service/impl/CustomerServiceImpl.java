@@ -27,7 +27,6 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerRegisterResponse createCustomer(CustomerRegisterRequest customerRegisterRequest, String xClientId, UUID xRequestId, String token) {
 
         CustomerRegisterInput input = CustomerRegisterInput.builder()
-                .cpf(customerRegisterRequest.getCpf())
                 .email(customerRegisterRequest.getEmail())
                 .name(customerRegisterRequest.getName())
                 .phone(customerRegisterRequest.getPhone())
