@@ -19,62 +19,81 @@ paths:
         - Customers
       summary: Register a new customer
       operationId: createCustomer
+      description: |
+        Creates a new customer record in the system.  
+        The request must include a unique email and CPF (if applicable).
       parameters:
         - name: X-Client-Id
           in: header
           required: true
+          description: Identifier of the client application making the request.
           schema:
             type: string
+            example: "mobile-app"
         - name: X-Request-Id
           in: header
           required: false
+          description: Unique identifier for tracing the request across systems.
           schema:
             type: string
             format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
       requestBody:
         required: true
+        description: JSON payload containing customer registration details.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CustomerRegisterRequest'
       responses:
         '201':
-          description: Customer successfully created
+          description: Customer successfully created.
           headers:
             Location:
-              description: URL of the newly created resource
+              description: URL of the newly created customer resource.
               schema:
                 type: string
+                format: uri
                 example: /customers/550e8400-e29b-41d4-a716-446655440000
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerRegisterResponse'
         '400':
-          description: Invalid input data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomerRegisterErrorResponse'
-        '409':
-          description: CPF or email already registered
+          description: Invalid input data. One or more fields failed validation.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerRegisterErrorResponse'
               example:
+                message: "INVALID_DATA"
                 details:
-                  - field: "cpf"
-                    status: "CPF already registered."
+                  - field: "email"
+                    status: "Invalid email format."
+                  - field: "password"
+                    status: "Password does not meet security requirements."
+        '409':
+          description: Conflict — the provided phone or email is already registered.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerRegisterErrorResponse'
+              example:
+                message: "DUPLICATE_ENTRY"
+                details:
+                  - field: "phone"
+                    status: "Phone already registered."
                   - field: "email"
                     status: "Email already registered."
-                message: "INVALID_DATA"
         '500':
-          description: Internal server error
+          description: Unexpected internal server error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "INTERNAL_SERVER_ERROR"
+                timestamp: "2025-11-10T20:00:00Z"
 #    get:
 #      tags:
 #        - Customers
@@ -169,7 +188,9 @@ components:
           example: "john@example.com"
           minLength: 5
           maxLength: 250
-          description: Customer's email.
+          description: |
+            Customer's valid email address.
+            Used as a unique identifier for login and communication.
         name:
           type: string
           example: "Guilherme Mendes"
@@ -182,12 +203,14 @@ components:
           minLength: 11
           maxLength: 11
           pattern: '^[0-9]{10,11}$'
-          description: Customer's mobile phone number including area code (DDD).
+          description: |
+            Customer's mobile phone number including area code (DDD).
+            Only digits are allowed, "11999998888".
         birthDate:
           type: string
           format: date
           example: "1990-01-01"
-          description: Customer's date of birth.
+          description: Customer's date of birth in ISO 8601 format (YYYY-MM-DD).
         gender:
           type: string
           enum:
@@ -195,7 +218,7 @@ components:
             - FEMALE
             - OTHER
             - PREFER_NOT_TO_SAY
-          description: Customer's gender.
+          description: Customer's self-identified gender.
         password:
           type: string
           format: password
@@ -203,7 +226,12 @@ components:
           maxLength: 20
           pattern: '^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+]).{8,}$'
           example: "R8m!tQ2_pL9"
-          description: Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character from !@#$%^&*()_+.
+          description: |
+            Password must be 8–20 characters long and include at least:
+            - one uppercase letter,
+            - one lowercase letter,
+            - one digit, and
+            - one special character (!@#$%^&*()_+).
 
     CustomerRegisterResponse:
       type: object
