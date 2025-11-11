@@ -20,7 +20,7 @@ public class CustomerController implements CustomersApi {
     }
 
     @Override
-    public ResponseEntity<CustomerRegisterResponse> createCustomer(String xClientId, CustomerRegisterRequest customerRegisterRequest, UUID xRequestId) {
+    public ResponseEntity<CustomerRegisterResponse> createCustomer(String xClientId, UUID xRequestId, CustomerRegisterRequest customerRegisterRequest) {
 
         var response = customerService.createCustomer(customerRegisterRequest, xClientId, xRequestId, "");
 

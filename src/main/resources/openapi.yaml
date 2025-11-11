@@ -16,12 +16,10 @@ paths:
   /customers:
     post:
       tags:
-        - Customers
+        - Information
       summary: Register a new customer
       operationId: createCustomer
-      description: |
-        Creates a new customer record in the system.  
-        The request must include a unique email and CPF (if applicable).
+      description: Creates a new customer record in the system.
       parameters:
         - name: X-Client-Id
           in: header
@@ -32,7 +30,7 @@ paths:
             example: "mobile-app"
         - name: X-Request-Id
           in: header
-          required: false
+          required: true
           description: Unique identifier for tracing the request across systems.
           schema:
             type: string
@@ -94,82 +92,307 @@ paths:
               example:
                 message: "INTERNAL_SERVER_ERROR"
                 timestamp: "2025-11-10T20:00:00Z"
-#    get:
-#      tags:
-#        - Customers
-#      summary: Retrieve a customer by ID
-#      operationId: getCustomerById
-#      parameters:
-#        - name: customerId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
-#            format: uuid
-#          description: Unique identifier of the customer
-#      responses:
-#        '200':
-#          description: Customer retrieved successfully
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/CustomerResponse'
-#        '404':
-#          description: Customer not found
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/ErrorResponse'
-#        '500':
-#          description: Internal server error
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/ErrorResponse'
-#    put:
-#      tags:
-#        - Customers
-#      summary: Update an existing customer
-#      operationId: updateCustomer
-#      parameters:
-#        - name: customerId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
-#            format: uuid
-#          description: Unique identifier of the customer
-#      requestBody:
-#        required: true
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/CustomerRegisterRequest'
-#      responses:
-#        '200':
-#          description: Customer updated successfully
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/CustomerResponse'
-#        '400':
-#          description: Invalid data in request body
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/CustomerRegisterErrorResponse'
-#        '404':
-#          description: Customer not found
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/ErrorResponse'
-#        '500':
-#          description: Internal server error
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/ErrorResponse'
+
+  /customers/{customerId}/information:
+    get:
+      tags:
+        - Information
+      summary: Retrieve customer information
+      operationId: getCustomerInformationById
+      description: |
+        Retrieves detailed information about a specific customer based on their unique identifier.
+        Requires a valid Bearer Token for authentication.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: Unique identifier of the customer.
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+        - name: X-Client-Id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of the requesting client or application.
+        - name: X-Request-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Optional request tracking ID for traceability.
+      responses:
+        '200':
+          description: Customer data successfully retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InformationResponse'
+        '400':
+          description: Invalid customer ID format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "INVALID_CUSTOMER_ID"
+        '401':
+          description: Missing or invalid authentication token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "UNAUTHORIZED"
+        '403':
+          description: The token is valid, but the user does not have permission to access this resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "FORBIDDEN"
+        '404':
+          description: Customer not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "CUSTOMER_NOT_FOUND"
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      tags:
+        - Information
+      summary: Partially update an existing customer information
+      operationId: patchCustomerByCustomerId
+      description: |
+        Partially updates information for an existing customer identified by `customerId`.
+        Only the fields provided in the request body will be modified.
+        A valid Bearer Token is required.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: Unique identifier of the customer to update.
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+        - name: X-Request-Id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional request tracking ID for observability.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerPatchRequest'
+      responses:
+        '200':
+          description: Customer successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InformationResponse'
+        '204':
+          description: Customer successfully updated. No content returned.
+        '400':
+          description: Invalid input data. For example, when no valid fields are provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerUpdateErrorResponse'
+              example:
+                details:
+                  - field: "requestBody"
+                    status: "At least one valid field must be provided for update."
+                message: "INVALID_DATA"
+        '401':
+          description: Missing or invalid authentication token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "UNAUTHORIZED"
+        '403':
+          description: The user does not have permission to update this customer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "FORBIDDEN"
+        '404':
+          description: Customer not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "CUSTOMER_NOT_FOUND"
+        '409':
+          description: Email or phone already registered for another user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerRegisterErrorResponse'
+              example:
+                details:
+                  - field: "email"
+                    status: "Email already registered."
+                  - field: "phone"
+                    status: "Phone number already registered."
+                message: "INVALID_DATA"
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /customers/{customerId}/account:
+
+    get:
+      tags:
+        - Accounts
+      summary: Retrieve all accounts associated with a specific customer
+      operationId: getAccountsByCustomerId
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Unique identifier of the customer whose accounts will be retrieved.
+        - name: X-Request-Id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional request ID for traceability.
+      responses:
+        '200':
+          description: Accounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountResponse'
+        '204':
+          description: Customer found but has no accounts associated
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      tags:
+        - Accounts
+      summary: Partially update an existing customer account
+      operationId: patchAccountByCustomerId
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: Unique identifier of the account to update
+          schema:
+            type: string
+            format: uuid
+        - name: X-Client-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: X-Request-Id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountUpdateRequest'
+      responses:
+        '200':
+          description: Account successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountUpdateResponse'
+        '204':
+          description: Account successfully updated. No content returned.
+        '400':
+          description: Invalid input data. For example, when no valid fields (`active` or `accountType`) are provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountUpdateErrorResponse'
+              example:
+                details:
+                  - field: "requestBody"
+                    status: "At least one field (active or accountType) must be provided."
+                message: "INVALID_DATA"
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict while updating account (invalid state transition)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -339,17 +562,17 @@ components:
             - OTHER
           example: "SOCIAL_MEDIA"
           nullable: true
-          description: Source from which the customer first heard about the application (e.g., social media, recommendation, influencer). Optional field.
+          description: Source from which the customer first heard about the application (social media, recommendation, influencer). Optional field.
         country:
           type: string
           example: "BR"
           nullable: true
-          description: ISO 3166-1 alpha-2 country code representing the customer’s country (e.g., BR, US, GB). Optional field.
+          description: ISO 3166-1 alpha-2 country code representing the customer’s country (BR, US, GB). Optional field.
         timezone:
           type: string
           example: "America/Sao_Paulo"
           nullable: true
-          description: IANA time zone identifier (e.g., America/Sao_Paulo, Europe/London, Asia/Tokyo). Optional field.
+          description: IANA time zone identifier (America/Sao_Paulo, Europe/London, Asia/Tokyo). Optional field.
         createdAt:
           type: string
           format: datetime
@@ -361,6 +584,161 @@ components:
           example: "2025-10-21T18:45:12Z"
           nullable: true
           description: Timestamp of the last update to the customer record (ISO 8601 format, UTC). May be null if never updated.
+
+    CustomerPatchRequest:
+      type: object
+      description: |
+        Object containing one or more fields to update for an existing customer.
+        All properties are optional — only provided fields will be modified.
+      properties:
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+          minLength: 5
+          maxLength: 250
+          description: Updated email of the customer.
+        name:
+          type: string
+          example: "John Doe"
+          minLength: 5
+          maxLength: 80
+          description: Updated full name of the customer.
+        phone:
+          type: string
+          example: "11999998888"
+          pattern: '^[0-9]{10,11}$'
+          description: Updated mobile number with area code (DDD).
+        birthDate:
+          type: string
+          format: date
+          example: "1990-01-01"
+          description: Updated birth date.
+        gender:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+            - OTHER
+            - PREFER_NOT_TO_SAY
+          description: Updated gender.
+        country:
+          type: string
+          example: "BR"
+          description: Updated ISO 3166-1 alpha-2 country code.
+          nullable: true
+        timezone:
+          type: string
+          example: "America/Sao_Paulo"
+          description: Updated IANA time zone identifier.
+          nullable: true
+
+    CustomerUpdateErrorResponse:
+      type: object
+      properties:
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "requestBody"
+              status:
+                type: string
+                example: "At least one valid field must be provided for update."
+        message:
+          type: string
+          enum:
+            - INVALID_DATA
+
+    AccountResponse:
+      type: object
+      properties:
+        accountId:
+          type: string
+          format: uuid
+          example: "d3d6c17a-f0b7-4ad1-a90c-5dbb4c7ff218"
+        customerId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        accountType:
+          type: string
+          enum:
+            - FREE
+            - PREMIUM
+            - ENTERPRISE
+          example: "PREMIUM"
+        active:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-11-10T19:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-11-10T20:10:00Z"
+
+    AccountUpdateRequest:
+      type: object
+      properties:
+        active:
+          type: boolean
+          example: false
+          description: Whether the account should be active or inactive.
+        accountType:
+          type: string
+          example: "PREMIUM"
+          enum:
+            - FREE
+            - PREMIUM
+            - ENTERPRISE
+          description: Updated type of the account.
+      description: At least one of the fields (`active`, `accountType`) must be provided.
+      minProperties: 1
+
+    AccountUpdateResponse:
+      type: object
+      properties:
+        details:
+          type: object
+          properties:
+            accountId:
+              type: string
+              format: uuid
+              example: "550e8400-e29b-41d4-a716-446655440000"
+              description: Unique identifier of the updated account.
+            updatedAt:
+              type: string
+              format: date-time
+              example: "2025-11-10T21:00:00Z"
+              description: Timestamp when the account was last updated.
+        message:
+          type: string
+          enum:
+            - ACCOUNT_UPDATED_SUCCESSFULLY
+
+    AccountUpdateErrorResponse:
+      type: object
+      properties:
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "requestBody"
+              status:
+                type: string
+                example: "At least one field (active or accountType) must be provided."
+        message:
+          type: string
+          enum:
+            - INVALID_DATA
 
     ErrorResponse:
       type: object
@@ -393,3 +771,12 @@ components:
           format: uuid
           example: "b5a8e2c8-3e54-4f73-a2b0-f9b1dbfa34cc"
           description: Unique identifier of the request, used for tracking and correlation in logs or monitoring systems.
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        JWT-based authentication. Include the access token in the Authorization header:
+        `Authorization: Bearer <token>`
