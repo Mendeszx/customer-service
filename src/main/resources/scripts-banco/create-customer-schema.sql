@@ -115,7 +115,7 @@ CREATE TABLE tb_consent(
     "accept" BOOLEAN NOT NULL,
     "version" VARCHAR(10) NOT NULL,
     "created_at" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-    "updated_at" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
+    "updated_at" TIMESTAMP(0) WITHOUT TIME ZONE NULL
 );
 ALTER TABLE
     tb_consent ADD PRIMARY KEY("consent_id");

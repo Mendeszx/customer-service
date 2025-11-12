@@ -1,4 +1,4 @@
-package com.api.customer_service.domain.entity;
+package com.api.customer_service.infra.database.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

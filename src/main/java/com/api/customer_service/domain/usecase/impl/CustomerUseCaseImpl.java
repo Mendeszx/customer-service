@@ -19,6 +19,13 @@ public class CustomerUseCaseImpl implements CustomerUseCase {
     @Override
     public CustomerRegisterOutput createCustomer(CustomerRegisterInput customerRegisterInput) {
 
+        //TODO: Criar validador de campos CustomerRegisterInput
+        //TODO: Verificar se já não contém registros com email ou telefone
+        //TODO: Criar login no Keycloak e resgatar o keycloakId
+        //TODO: Criar InformationModel e salvar no banco de dados
+        //TODO: Criar AccountModel e salvar no banco de dados
+        //TODO: Monta objeto de retorno
+
         log.info("CustomerRegisterRequest: {}", customerRegisterInput);
 
         return CustomerRegisterOutput.builder()
