@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface CustomerService {
 
-    CustomerRegisterResponse createCustomer(CustomerRegisterRequest customerRegisterRequest, String xClientId, UUID xRequestId, String token);
+    CustomerRegisterResponse createCustomer(CustomerRegisterRequest customerRegisterRequest, String xClientId, UUID xRequestId);
 }

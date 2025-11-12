@@ -23,5 +23,4 @@ public class CustomerRegisterInput {
     private String password;
     private String xClientId;
     private UUID xRequestId;
-    private String token;
 }

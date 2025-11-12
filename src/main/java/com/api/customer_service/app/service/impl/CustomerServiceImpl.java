@@ -24,7 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerRegisterResponse createCustomer(CustomerRegisterRequest customerRegisterRequest, String xClientId, UUID xRequestId, String token) {
+    public CustomerRegisterResponse createCustomer(CustomerRegisterRequest customerRegisterRequest, String xClientId, UUID xRequestId) {
 
         CustomerRegisterInput input = CustomerRegisterInput.builder()
                 .email(customerRegisterRequest.getEmail())
@@ -35,7 +35,6 @@ public class CustomerServiceImpl implements CustomerService {
                 .password(customerRegisterRequest.getPassword())
                 .xClientId(xClientId)
                 .xRequestId(xRequestId)
-                .token(token)
                 .build();
 
         var customerRegisterOutput = customerUseCase.createCustomer(input);

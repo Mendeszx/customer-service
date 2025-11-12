@@ -5,6 +5,7 @@ import com.api.customer_service.model.ErrorResponse;
 import com.api.customer_service.model.FieldErrorResponse;
 import com.api.customer_service.model.FieldErrorResponseDetailsInner;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +22,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @Value("${request.requestId}")
     private String requestIdHeader;
@@ -67,9 +67,9 @@ public class GlobalExceptionHandler {
                 request.getHeader(requestIdHeader),
                 exception);
 
-        ErrorResponse response = createErrorResponse(exception, request);
+        var body = createErrorResponse(exception, request);
 
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private FieldErrorResponseDetailsInner createFieldErrorResponseDetailsInner(String field, String status) {
