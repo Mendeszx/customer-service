@@ -1,6 +1,6 @@
-package com.api.customer_service.app.usecase.impl;
+package com.api.customer_service.domain.usecase.impl;
 
-import com.api.customer_service.app.usecase.CustomerUseCase;
+import com.api.customer_service.domain.usecase.CustomerUseCase;
 import com.api.customer_service.domain.input.CustomerRegisterInput;
 import com.api.customer_service.domain.output.CustomerRegisterOutput;
 import com.api.customer_service.model.CustomerRegisterResponse;

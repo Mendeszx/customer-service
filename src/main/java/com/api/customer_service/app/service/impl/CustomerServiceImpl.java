@@ -2,7 +2,7 @@ package com.api.customer_service.app.service.impl;
 
 import com.api.customer_service.app.mapper.CustomerRegisterMapper;
 import com.api.customer_service.app.service.CustomerService;
-import com.api.customer_service.app.usecase.CustomerUseCase;
+import com.api.customer_service.domain.usecase.CustomerUseCase;
 import com.api.customer_service.domain.input.CustomerRegisterInput;
 import com.api.customer_service.model.CustomerRegisterRequest;
 import com.api.customer_service.model.CustomerRegisterResponse;

@@ -1,4 +1,4 @@
-package com.api.customer_service.app.usecase;
+package com.api.customer_service.domain.usecase;
 
 
 import com.api.customer_service.domain.input.CustomerRegisterInput;

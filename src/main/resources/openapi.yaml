@@ -208,7 +208,7 @@ paths:
     get:
       tags:
         - Accounts
-      summary: Retrieve an account associated with a specific customer.
+      summary: Retrieve an tb_account associated with a specific customer.
       operationId: getCustomerAccountByCustomerId
       description: |
         Retrieves an account for a specific customer based on their unique identifier.
@@ -263,7 +263,7 @@ paths:
     patch:
       tags:
         - Accounts
-      summary: Partially update an existing customer account
+      summary: Partially update an existing customer tb_account
       operationId: patchCustomerAccountByCustomerId
       description: |
         Partially updates the account of an existing customer identified by `customerId`.
@@ -275,7 +275,7 @@ paths:
         - name: customerId
           in: path
           required: true
-          description: Unique identifier of the account to update
+          description: Unique identifier of the tb_account to update
           schema:
             type: string
             format: uuid
@@ -312,7 +312,7 @@ paths:
         '404':
           description: Account not found.
         '409':
-          description: Conflict while updating account (invalid state transition)
+          description: Conflict while updating tb_account (invalid state transition)
           content:
             application/json:
               schema:
@@ -533,7 +533,7 @@ components:
         active:
           type: boolean
           example: false
-          description: Whether the account should be active or inactive.
+          description: Whether the tb_account should be active or inactive.
         accountType:
           type: string
           example: "PREMIUM"
@@ -541,7 +541,7 @@ components:
             - FREE
             - PREMIUM
             - ENTERPRISE
-          description: Type of the account.
+          description: Type of the tb_account.
       minProperties: 1
 
     CustomerAccountResponse:
@@ -556,7 +556,7 @@ components:
           type: string
           format: uuid
           example: "d3d6c17a-f0b7-4ad1-a90c-5dbb4c7ff218"
-          description: Unique identifier of the account in the internal system.
+          description: Unique identifier of the tb_account in the internal system.
         customerId:
           type: string
           format: uuid
@@ -569,11 +569,11 @@ components:
             - PREMIUM
             - ENTERPRISE
           example: "PREMIUM"
-          description: Type of the account.
+          description: Type of the tb_account.
         active:
           type: boolean
           example: true
-          description: Whether the account should be active or inactive.
+          description: Whether the tb_account should be active or inactive.
 
     FieldErrorResponse:
       type: object
